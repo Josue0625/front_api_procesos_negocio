@@ -1,43 +1,43 @@
 //funciones js para el modulo de usuarios
-const urlApi = "http://localhost:9000";//colocar la url con el puerto
+const urlApi = "http://localhost:0606"; //colocar la url con el puerto
 
-async function login(){
+async function login() {
     var myForm = document.getElementById("myForm");
     var formData = new FormData(myForm);
     var jsonData = {};
-    for(var [k, v] of formData){//convertimos los datos a json
+    for (var [k, v] of formData) { //convertimos los datos a json
         jsonData[k] = v;
     }
-    var settings={
+    var settings = {
         method: 'POST',
-        headers:{
+        headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json'
         },
         body: JSON.stringify(jsonData)
     }
-    const request = await fetch(urlApi+"/auth/login",settings);
-    if(request.ok){
-        const respuesta = await request.text();        
-        localStorage.token = respuesta;     
-        location.href= "dashboard.html";
+    const request = await fetch(urlApi + "/auth/login", settings);
+    if (request.ok) {
+        const respuesta = await request.text();
+        localStorage.token = respuesta;
+        location.href = "dashboard.html";
     }
 }
 
-function listarUsuarios(){
+function listarUsuarios() {
     validaToken();
-    var settings={
+    var settings = {
         method: 'GET',
-        headers:{
+        headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json',
             'Authorization': localStorage.token
         },
     }
-    fetch(urlApi+"/usuarios",settings)
-    .then(response => response.json())
-    .then(function(data){
-        
+    fetch(urlApi + "/listusers", settings)
+        .then(response => response.json())
+        .then(function(data) {
+
             var usuarios = `
             <div class="p-3 mb-2 bg-light text-dark">
                     <h1 class="display-5"><i class="fa-solid fa-list"></i> Listado de usuarios</h1>
@@ -55,15 +55,15 @@ function listarUsuarios(){
                         </tr>
                     </thead>
                     <tbody id="listar">`;
-            for(const usuario of data){
-                console.log(usuario.correo)
+            for (const usuario of data) {
+                console.log(usuario.email)
                 usuarios += `
                 
                         <tr>
                             <th scope="row">${usuario.id}</th>
-                            <td>${usuario.nombre}</td>
-                            <td>${usuario.apellidos}</td>
-                            <td>${usuario.correo}</td>
+                            <td>${usuario.name}</td>
+                            <td>${usuario.lastname}</td>
+                            <td>${usuario.email}</td>
                             <td>
                             <button type="button" class="btn btn-outline-danger" 
                             onclick="eliminaUsuario('${usuario.id}')">
@@ -78,49 +78,49 @@ function listarUsuarios(){
                             </td>
                         </tr>
                     `;
-                
+
             }
             usuarios += `
             </tbody>
                 </table>
             `;
             document.getElementById("datos").innerHTML = usuarios;
-    })
+        })
 }
 
-function eliminaUsuario(id){
+function eliminaUsuario(id) {
     validaToken();
-    var settings={
+    var settings = {
         method: 'DELETE',
-        headers:{
+        headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json',
             'Authorization': localStorage.token
         },
     }
-    fetch(urlApi+"/usuario/"+id,settings)
-    .then((data) => {
-        console.log(data); // JSON data parsed by `data.json()` call
-        listarUsuarios();
-        alertas("Se ha eliminado el usuario exitosamente!",2)
-      })
+    fetch(urlApi + "/user/" + id, settings)
+        .then((data) => {
+            console.log(data); // JSON data parsed by `data.json()` call
+            listarUsuarios();
+            alertas("Se ha eliminado el usuario exitosamente!", 2)
+        })
 }
 
-function verModificarUsuario(id){
+function verModificarUsuario(id) {
     validaToken();
-    var settings={
+    var settings = {
         method: 'GET',
-        headers:{
+        headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json',
             'Authorization': localStorage.token
         },
     }
-    fetch(urlApi+"/usuario/"+id,settings)
-    .then(response => response.json())
-    .then(function(usuario){
-            var cadena='';
-            if(usuario){                
+    fetch(urlApi + "/user/" + id, settings)
+        .then(response => response.json())
+        .then(function(usuario) {
+            var cadena = '';
+            if (usuario) {
                 cadena = `
                 <div class="p-3 mb-2 bg-light text-dark">
                     <h1 class="display-5"><i class="fa-solid fa-user-pen"></i> Modificar Usuario</h1>
@@ -128,14 +128,14 @@ function verModificarUsuario(id){
               
                 <form action="" method="post" id="myForm">
                     <input type="hidden" name="id" id="id" value="${usuario.id}">
-                    <label for="nombre" class="form-label">First Name</label>
-                    <input type="text" class="form-control" name="nombre" id="nombre" required value="${usuario.nombre}"> <br>
-                    <label for="apellidos"  class="form-label">Last Name</label>
-                    <input type="text" class="form-control" name="apellidos" id="apellidos" required value="${usuario.apellidos}"> <br>
-                    <label for="documento"  class="form-label">document</label>
-                    <input type="text" class="form-control" name="documento" id="documento" required value="${usuario.documento}"> <br>
-                    <label for="correo" class="form-label">correo</label>
-                    <input type="correo" class="form-control" name="correo" id="correo" required value="${usuario.correo}"> <br>
+                    <label for="name" class="form-label">First Name</label>
+                    <input type="text" class="form-control" name="name" id="name" required value="${usuario.name}"> <br>
+                    <label for="lastname"  class="form-label">Last Name</label>
+                    <input type="text" class="form-control" name="lastname" id="lastname" required value="${usuario.lastname}"> <br>
+                    <label for="document"  class="form-label">document</label>
+                    <input type="text" class="form-control" name="document" id="document" required value="${usuario.document}"> <br>
+                    <label for="email" class="form-label">email</label>
+                    <input type="email" class="form-control" name="email" id="email" required value="${usuario.email}"> <br>
                     <label for="password" class="form-label">Password</label>
                     <input type="password" class="form-control" id="password" name="password" required> <br>
                     <button type="button" class="btn btn-outline-warning" 
@@ -146,20 +146,20 @@ function verModificarUsuario(id){
             document.getElementById("contentModal").innerHTML = cadena;
             var myModal = new bootstrap.Modal(document.getElementById('modalUsuario'))
             myModal.toggle();
-    })
+        })
 }
 
-async function modificarUsuario(id){
+async function modificarUsuario(id) {
     validaToken();
     var myForm = document.getElementById("myForm");
     var formData = new FormData(myForm);
     var jsonData = {};
-    for(var [k, v] of formData){//convertimos los datos a json
+    for (var [k, v] of formData) { //convertimos los datos a json
         jsonData[k] = v;
     }
-    const request = await fetch(urlApi+"/usuario/"+id, {
+    const request = await fetch(urlApi + "/user/" + id, {
         method: 'PUT',
-        headers:{
+        headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json',
             'Authorization': localStorage.token
@@ -167,55 +167,54 @@ async function modificarUsuario(id){
         body: JSON.stringify(jsonData)
     });
     listarUsuarios();
-    alertas("Se ha modificado el usuario exitosamente!",1)
+    alertas("Se ha modificado el usuario exitosamente!", 1)
     document.getElementById("contentModal").innerHTML = '';
     var myModalEl = document.getElementById('modalUsuario')
     var modal = bootstrap.Modal.getInstance(myModalEl) // Returns a Bootstrap modal instance
     modal.hide();
 }
 
-function verUsuario(id){
+function verUsuario(id) {
     validaToken();
-    var settings={
+    var settings = {
         method: 'GET',
-        headers:{
+        headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json',
             'Authorization': localStorage.token
         },
     }
-    fetch(urlApi+"/usuario/"+id,settings)
-    .then(response => response.json())
-    .then(function(usuario){
-            var cadena='';
-            if(usuario){                
+    fetch(urlApi + "/user/" + id, settings)
+        .then(response => response.json())
+        .then(function(usuario) {
+            var cadena = '';
+            if (usuario) {
                 cadena = `
                 <div class="p-3 mb-2 bg-light text-dark">
                     <h1 class="display-5"><i class="fa-solid fa-user-pen"></i> Visualizar Usuario</h1>
                 </div>
                 <ul class="list-group">
-                    <li class="list-group-item">Nombre: ${usuario.nombre}</li>
-                    <li class="list-group-item">Apellido: ${usuario.apellidos}</li>
-                    <li class="list-group-item">Correo: ${usuario.correo}</li>
-                    <li class="list-group-item">Documento: ${usuario.documento}</li>
+                    <li class="list-group-item">name: ${usuario.name}</li>
+                    <li class="list-group-item">Apellido: ${usuario.lastname}</li>
+                    <li class="list-group-item">email: ${usuario.email}</li>
+                    <li class="list-group-item">document: ${usuario.document}</li>
                 </ul>`;
-              
+
             }
             document.getElementById("contentModal").innerHTML = cadena;
             var myModal = new bootstrap.Modal(document.getElementById('modalUsuario'))
             myModal.toggle();
-    })
+        })
 }
 
-function alertas(mensaje,tipo){
-    var color ="warning";
-    if(tipo == 1){//success verde
-        color="success"
-    }
-    else{//danger rojo
+function alertas(mensaje, tipo) {
+    var color = "warning";
+    if (tipo == 1) { //success verde
+        color = "success"
+    } else { //danger rojo
         color = "danger"
     }
-    var alerta =`<div class="alert alert-${color} alert-dismissible fade show" role="alert">
+    var alerta = `<div class="alert alert-${color} alert-dismissible fade show" role="alert">
                     <strong><i class="fa-solid fa-triangle-exclamation"></i></strong>
                         ${mensaje}
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
@@ -223,7 +222,7 @@ function alertas(mensaje,tipo){
     document.getElementById("alerta").innerHTML = alerta;
 }
 
-function registerForm(auth=false){
+function registerForm(auth = false) {
     cadena = `
             <div class="p-3 mb-2 bg-light text-dark">
                 <h1 class="display-5"><i class="fa-solid fa-user-pen"></i> Registrar Usuario</h1>
@@ -231,54 +230,54 @@ function registerForm(auth=false){
               
             <form action="" method="post" id="myFormReg">
                 <input type="hidden" name="id" id="id">
-                <label for="nombre" class="form-label">First Name</label>
-                <input type="text" class="form-control" name="nombre" id="nombre" required> <br>
-                <label for="apellidos"  class="form-label">Last Name</label>
-                <input type="text" class="form-control" name="apellidos" id="apellidos" required> <br>
-                <label for="documento"  class="form-label">document</label>
-                <input type="text" class="form-control" name="documento" id="documento" required> <br>
-                <label for="correo" class="form-label">correo</label>
-                <input type="correo" class="form-control" name="correo" id="correo" required> <br>
+                <label for="name" class="form-label">First Name</label>
+                <input type="text" class="form-control" name="name" id="name" required> <br>
+                <label for="lastname"  class="form-label">Last Name</label>
+                <input type="text" class="form-control" name="lastname" id="lastname" required> <br>
+                <label for="document"  class="form-label">document</label>
+                <input type="text" class="form-control" name="document" id="document" required> <br>
+                <label for="email" class="form-label">email</label>
+                <input type="email" class="form-control" name="email" id="email" required> <br>
                 <label for="password" class="form-label">Password</label>
                 <input type="password" class="form-control" id="password" name="password" required> <br>
                 <button type="button" class="btn btn-outline-info" onclick="registrarUsuario('${auth}')">Registrar</button>
             </form>`;
-            document.getElementById("contentModal").innerHTML = cadena;
-            var myModal = new bootstrap.Modal(document.getElementById('modalUsuario'))
-            myModal.toggle();
+    document.getElementById("contentModal").innerHTML = cadena;
+    var myModal = new bootstrap.Modal(document.getElementById('modalUsuario'))
+    myModal.toggle();
 }
 
-async function registrarUsuario(auth=false){
+async function registrarUsuario(auth = false) {
     var myForm = document.getElementById("myFormReg");
     var formData = new FormData(myForm);
     var jsonData = {};
-    for(var [k, v] of formData){//convertimos los datos a json
+    for (var [k, v] of formData) { //convertimos los datos a json
         jsonData[k] = v;
     }
-    console.log("data user ",jsonData);
-    const request = await fetch(urlApi+"/usuario", {
-        method: 'POST',
-        headers:{
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(jsonData)
-    })
-    .then(response => response.json())
-    .then(function(respuesta){
-        console.log("respuesta peticion", respuesta)
-    });
-    if(auth){
+    console.log("data user ", jsonData);
+    const request = await fetch(urlApi + "/user", {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(jsonData)
+        })
+        .then(response => response.json())
+        .then(function(respuesta) {
+            console.log("respuesta peticion", respuesta)
+        });
+    if (auth) {
         listarUsuarios();
     }
-    alertas("Se ha registrado el usuario exitosamente!",1)
+    alertas("Se ha registrado el usuario exitosamente!", 1)
     document.getElementById("contentModal").innerHTML = '';
     var myModalEl = document.getElementById('modalUsuario')
     var modal = bootstrap.Modal.getInstance(myModalEl) // Returns a Bootstrap modal instance
     modal.hide();
 }
 
-function modalConfirmacion(texto,funcion){
+function modalConfirmacion(texto, funcion) {
     document.getElementById("contenidoConfirmacion").innerHTML = texto;
     var myModal = new bootstrap.Modal(document.getElementById('modalConfirmacion'))
     myModal.toggle();
@@ -286,13 +285,13 @@ function modalConfirmacion(texto,funcion){
     confirmar.onclick = funcion;
 }
 
-function salir(){
+function salir() {
     localStorage.clear();
     location.href = "index.html";
 }
 
-function validaToken(){
-    if(localStorage.token == undefined){
+function validaToken() {
+    if (localStorage.token == undefined) {
         salir();
     }
 }
