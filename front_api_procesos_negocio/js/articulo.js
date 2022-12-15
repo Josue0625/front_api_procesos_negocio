@@ -106,7 +106,7 @@ function verModificarArticulo(codigo) {
               
                 <form action="" method="post" id="myFormA">
                     <label for="codigo" class="form-label">C&oacute;digo</label>
-                    <input type="text" class="form-control" name="codigo" id="codigo" disabled value="${articulo.codigo}"> <br>
+                    <input type="number" class="form-control" name="codigo" id="codigo" disabled value="${articulo.codigo}"> <br>
                     <label for="nombre"  class="form-label">Nombre Art&iacute;culo</label>
                     <input type="text" class="form-control" name="nombre" id="nombre" required value="${articulo.nombre}"> <br>
                     <label for="descripcion"  class="form-label">Descripci&oacute;n</label>
@@ -132,7 +132,7 @@ function verModificarArticulo(codigo) {
                     </select>
                     </br>
                     <label for="user" class="form-label">Craedor del Art&iacute;culo</label>
-                    <input type="text" class="form-control" name="codigo" id="codigo" disabled value="${articulo.user.name} ${articulo.user.lastname} "> <br>
+                    <input type="text" class="form-control" name="categoria" id="categoria" disabled value="${articulo.user.id} "> <br>
                     </br>
                     <button type="button" class="btn btn-outline-warning" onclick="modificarArticulo('${articulo.codigo}')">Modificar
                     </button>
@@ -152,9 +152,17 @@ async function modificarArticulo(codigo) {
   var myForm = document.getElementById("myFormA");
   var formData = new FormData(myForm);
   var jsonData = {};
+  var jsonCategoria={};
   for (var [k, v] of formData) {
     //convertimos los datos a json
-    jsonData[k] = v;
+    
+    if(k=="categoria"){
+      jsonCategoria["id"]=v;
+      jsonData[k]=jsonCategoria
+    }else{
+      jsonData[k] = v;
+    }
+    
   }
   const request = await fetch(urlApi + "/articulo/" + codigo, {
     method: "PUT",
@@ -190,13 +198,19 @@ function verArticulo(codigo) {
       if (articulo) {
         cadena = `
                 <div class="p-3 mb-2 bg-light text-dark">
-                    <h1 class="display-5"><i class="fa-solid fa-user-pen"></i> Visualizar articulo</h1>
+                    <h1 class="display-5"><i class="fa-solid fa-user-pen"></i> Visualizar Art&iacute;culo</h1>
                 </div>
                 <ul class="list-group">
-                    <li class="list-group-item">codigo: ${articulo.codigo}</li>
-                    <li class="list-group-item">Articulo: ${articulo.nombre}</li>
-                    <li class="list-group-item">Descripcion: ${articulo.descripcion}</li>
-                </ul>`;
+                    <li class="list-group-item">C&oacute;digo: ${articulo.codigo}</li>
+                    <li class="list-group-item">Nombre Art&iacute;culo: ${articulo.nombre}</li>
+                    <li class="list-group-item">Descripci&oacute;n: ${articulo.descripcion}</li>
+                    <li class="list-group-item">Creador del Art&iacute;culo: ${articulo.user.name} ${articulo.user.lastname}</li>
+                    <li class="list-group-item">Fecha de Publicaci&oacute;n: ${articulo.fecha.substr(0,10)}</li>
+                    <li class="list-group-item">Precio de compra: $${articulo.compra}</li>
+                    <li class="list-group-item">Precio de venta: $${articulo.venta}</li>
+                    <li class="list-group-item">Stock: ${articulo.stock}</li>
+                    <li class="list-group-item">Categor&iacute;a: ${articulo.categoria.nombre}</li>
+                </ul>`
       }
       document.getElementById("contentModal").innerHTML = cadena;
       var myModal = new bootstrap.Modal(
