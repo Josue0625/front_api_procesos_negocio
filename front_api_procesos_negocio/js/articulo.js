@@ -187,7 +187,18 @@ function verArticulo(codigo) {
 
 
 function registerFormA(auth = false) {
-    cadena = `
+    var settings = {
+        method: 'GET',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            'Authorization': localStorage.token
+        },
+    }
+    fetch(urlApi + "/categorias", settings)
+        .then(response => response.json())
+        .then(function(data) {
+            cadena = `
             <div class="p-3 mb-2 bg-light text-dark">
                 <h1 class="display-5"><i class="fa-solid fa-user-pen"></i> Registrar articulo</h1>
             </div>
@@ -208,11 +219,22 @@ function registerFormA(auth = false) {
                 <input type="text" class="form-control" name="venta" id="venta" required> <br>
                 <label for="compra"  class="form-label">Precio Compra</label>
                 <input type="text" class="form-control" name="compra" id="compra" required> <br>
-                <button type="button" class="btn btn-outline-info" onclick="registrarArticulo('${auth}')">Registrar</button>
+                <label for="categoria">Categoria</label>
+                <select class="form-select" id="categoria" name="categoria" aria-label="Default select example">
+                            <option value="0"></option>
+                            `;
+            for (const categoria of data) {
+                console.log(categoria.id)
+                cadena += `<option value="${categoria.id}">${categoria.nombre}</option>`;
+            }
+            cadena += `
+                </select>
+            <button type = "button" class = "btn btn-outline-info" onclick = "registrarArticulo('${auth}')" > Registrar </button> 
             </form>`;
-    document.getElementById("contentModal").innerHTML = cadena;
-    var myModal = new bootstrap.Modal(document.getElementById('modalUsuario'))
-    myModal.toggle();
+            document.getElementById("contentModal").innerHTML = cadena;
+            var myModal = new bootstrap.Modal(document.getElementById('modalUsuario'))
+            myModal.toggle();
+        })
 }
 
 async function registrarArticulo(auth = false) {
