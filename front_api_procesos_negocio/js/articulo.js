@@ -102,11 +102,12 @@ function verModificarArticulo(codigo) {
                         cadena = `
                 <div class="p-3 mb-2 bg-light text-dark">
                     <h1 class="display-5"><i class="fa-solid fa-user-pen"></i> Modificar articulo</h1>
-                    <h3>Código: ${articulo.codigo}</h3>
                 </div>
               
                 <form action="" method="post" id="myFormA">
-                    <label for="nombre"  class="form-label">Art&iacute;culo</label>
+                    <label for="codigo" class="form-label">C&oacute;digo</label>
+                    <input type="text" class="form-control" name="codigo" id="codigo" disabled value="${articulo.codigo}"> <br>
+                    <label for="nombre"  class="form-label">Nombre Art&iacute;culo</label>
                     <input type="text" class="form-control" name="nombre" id="nombre" required value="${articulo.nombre}"> <br>
                     <label for="descripcion"  class="form-label">Descripci&oacute;n</label>
                     <input type="text" class="form-control" name="descripcion" id="descripcion" required value="${articulo.descripcion}"> <br>
@@ -118,7 +119,8 @@ function verModificarArticulo(codigo) {
                     <input type="text" class="form-control" name="venta" id="venta" required value="${articulo.venta}"> <br>
                     <label for="compra"  class="form-label">Precio Compra</label>
                     <input type="text" class="form-control" name="compra" id="compra" required value="${articulo.compra}"> <br>
-                    <select class="form-select" name="user" id="user">
+                    <label for="compra"  class="form-label">Selecciona la categor&iacute;a</label>
+                    <select class="form-select" name="categoria" id="categoria">
                       <option value="${articulo.categoria.id}">${articulo.categoria.nombre}</option>`;
                         for (const category of da) {
                             if (articulo.categoria.id != category.id) {
@@ -128,6 +130,9 @@ function verModificarArticulo(codigo) {
                         }
                         cadena += `
                     </select>
+                    </br>
+                    <label for="user" class="form-label">Craedor del Art&iacute;culo</label>
+                    <input type="text" class="form-control" name="codigo" id="codigo" disabled value="${articulo.user.name} ${articulo.user.lastname} "> <br>
                     </br>
                     <button type="button" class="btn btn-outline-warning" onclick="modificarArticulo('${articulo.codigo}')">Modificar
                     </button>
