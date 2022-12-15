@@ -19,7 +19,7 @@ function listarArticulos() {
                     <h1 class="display-5"><i class="fa-solid fa-list"></i> Listado de articulos</h1>
                 </div>
                   
-                <a href="#" onclick="registerForm('true')" class="btn btn-outline-success"><i class="fa-solid fa-user-plus"></i></a>
+                <a href="#" onclick="registerFormA('true')" class="btn btn-outline-success"><i class="fa-solid fa-user-plus"></i></a>
                 <table class="table">
                     <thead>
                         <tr>
@@ -102,7 +102,7 @@ function verModificarArticulo(codigo) {
                     <h1 class="display-5"><i class="fa-solid fa-user-pen"></i> Modificar articulo</h1>
                 </div>
               
-                <form action="" method="post" id="myForm">
+                <form action="" method="post" id="myFormA">
                     <label for="codigo" class="form-label">C&oacute;digo</label>
                     <input type="text" class="form-control" name="codigo" id="codigo" required value="${articulo.codigo}"> <br>
                     <label for="nombre"  class="form-label">Art&iacute;culo</label>
@@ -130,7 +130,7 @@ function verModificarArticulo(codigo) {
 
 async function modificarArticulo(codigo) {
     validaToken();
-    var myForm = document.getElementById("myForm");
+    var myForm = document.getElementById("myFormA");
     var formData = new FormData(myForm);
     var jsonData = {};
     for (var [k, v] of formData) { //convertimos los datos a json
@@ -185,32 +185,18 @@ function verArticulo(codigo) {
         })
 }
 
-function alertas(mensaje, tipo) {
-    var color = "warning";
-    if (tipo == 1) { //success verde
-        color = "success"
-    } else { //danger rojo
-        color = "danger"
-    }
-    var alerta = `<div class="alert alert-${color} alert-dismissible fade show" role="alert">
-                    <strong><i class="fa-solid fa-triangle-exclamation"></i></strong>
-                        ${mensaje}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                 </div>`;
-    document.getElementById("alerta").innerHTML = alerta;
-}
 
-function registerForm(auth = false) {
+function registerFormA(auth = false) {
     cadena = `
             <div class="p-3 mb-2 bg-light text-dark">
                 <h1 class="display-5"><i class="fa-solid fa-user-pen"></i> Registrar articulo</h1>
             </div>
               
-            <form action="" method="post" id="myFormReg">
+            <form action="" method="post" id="myFormRegA">
                 <input type="hidden" name="id" id="id">
                 <label for="codigo" class="form-label">C&oacute;digo</label>
                 <input type="text" class="form-control" name="codigo" id="codigo" required> <br>
-                <label for="nombre"  class="form-label">Art&ioacute;culo</label>
+                <label for="nombre"  class="form-label">Art&iacute;culo</label>
                 <input type="text" class="form-control" name="nombre" id="nombre" required> <br>
                 <label for="descripcion"  class="form-label">Descripci&oacute;n</label>
                 <input type="text" class="form-control" name="descripcion" id="descripcion" required> <br>
@@ -225,12 +211,12 @@ function registerForm(auth = false) {
                 <button type="button" class="btn btn-outline-info" onclick="registrarArticulo('${auth}')">Registrar</button>
             </form>`;
     document.getElementById("contentModal").innerHTML = cadena;
-    var myModal = new bootstrap.Modal(document.getElementById('modalArticulo'))
+    var myModal = new bootstrap.Modal(document.getElementById('modalUsuario'))
     myModal.toggle();
 }
 
 async function registrarArticulo(auth = false) {
-    var myForm = document.getElementById("myFormReg");
+    var myForm = document.getElementById("myFormRegA");
     var formData = new FormData(myForm);
     var jsonData = {};
     for (var [k, v] of formData) { //convertimos los datos a json
@@ -254,26 +240,7 @@ async function registrarArticulo(auth = false) {
     }
     alertas("Se ha registrado el articulo exitosamente!", 1)
     document.getElementById("contentModal").innerHTML = '';
-    var myModalEl = document.getElementById('modalArticulo')
+    var myModalEl = document.getElementById('modalUsuario')
     var modal = bootstrap.Modal.getInstance(myModalEl) // Returns a Bootstrap modal instance
     modal.hide();
-}
-
-function modalConfirmacion(texto, funcion) {
-    document.getElementById("contenidoConfirmacion").innerHTML = texto;
-    var myModal = new bootstrap.Modal(document.getElementById('modalConfirmacion'))
-    myModal.toggle();
-    var confirmar = document.getElementById("confirmar");
-    confirmar.onclick = funcion;
-}
-
-function salir() {
-    localStorage.clear();
-    location.href = "index.html";
-}
-
-function validaToken() {
-    if (localStorage.token == undefined) {
-        salir();
-    }
 }
