@@ -2,18 +2,18 @@
 
 function listarArticulos() {
     validaToken();
+    var cont = 0;
     var settings = {
-        method: 'GET',
+        method: "GET",
         headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
-            'Authorization': localStorage.token
+            Accept: "application/json",
+            "Content-Type": "application/json",
+            Authorization: localStorage.token,
         },
-    }
+    };
     fetch(urlApi + "/articulos", settings)
-        .then(response => response.json())
+        .then((response) => response.json())
         .then(function(data) {
-
             var articulos = `
             <div class="p-3 mb-2 bg-light text-dark">
                     <h1 class="display-5"><i class="fa-solid fa-list"></i> Listado de articulos</h1>
@@ -31,11 +31,10 @@ function listarArticulos() {
                     </thead>
                     <tbody id="listar">`;
             for (const articulo of data) {
-                console.log(articulo.codigo)
+                cont++;
                 articulos += `
-                
                         <tr>
-                            <th scope="row">${articulo.id}</th>
+                            <th scope="row">${cont}</th>
                             <td>${articulo.codigo}</td>
                             <td>${articulo.nombre}</td>
                             <td>${articulo.descripcion}</td>
@@ -53,79 +52,94 @@ function listarArticulos() {
                             </td>
                         </tr>
                     `;
-
             }
             articulos += `
             </tbody>
                 </table>
             `;
             document.getElementById("datos").innerHTML = articulos;
-        })
+        });
 }
 
 function eliminaArticulo(codigo) {
     validaToken();
     var settings = {
-        method: 'DELETE',
+        method: "DELETE",
         headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
-            'Authorization': localStorage.token
+            Accept: "application/json",
+            "Content-Type": "application/json",
+            Authorization: localStorage.token,
         },
-    }
-    fetch(urlApi + "/articulo/" + codigo, settings)
-        .then((data) => {
-            console.log(data); // JSON data parsed by `data.json()` call
-            listarArticulos();
-            alertas("Se ha eliminado el articulo exitosamente!", 2)
-        })
+    };
+    fetch(urlApi + "/articulo/" + codigo, settings).then((data) => {
+        console.log(data); // JSON data parsed by `data.json()` call
+        listarArticulos();
+        alertas("Se ha eliminado el articulo exitosamente!", 2);
+    });
 }
 
 function verModificarArticulo(codigo) {
-    console.log(codigo)
+    console.log(codigo);
     validaToken();
     var settings = {
-        method: 'GET',
+        method: "GET",
         headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
-            'Authorization': localStorage.token
+            Accept: "application/json",
+            "Content-Type": "application/json",
+            Authorization: localStorage.token,
         },
-    }
+    };
+
     fetch(urlApi + "/articulo/" + codigo, settings)
-        .then(response => response.json())
+        .then((response) => response.json())
         .then(function(articulo) {
-            var cadena = '';
             if (articulo) {
-                cadena = `
+                fetch(urlApi + "/categorias", settings)
+                    .then((resp) => resp.json())
+                    .then(function(da) {
+                        var cadena = "";
+                        var fechaDB = articulo.fecha;
+                        cadena = `
                 <div class="p-3 mb-2 bg-light text-dark">
                     <h1 class="display-5"><i class="fa-solid fa-user-pen"></i> Modificar articulo</h1>
+                    <h3>Código: ${articulo.codigo}</h3>
                 </div>
               
                 <form action="" method="post" id="myFormA">
-                    <label for="codigo" class="form-label">C&oacute;digo</label>
-                    <input type="text" class="form-control" name="codigo" id="codigo" required value="${articulo.codigo}"> <br>
                     <label for="nombre"  class="form-label">Art&iacute;culo</label>
                     <input type="text" class="form-control" name="nombre" id="nombre" required value="${articulo.nombre}"> <br>
                     <label for="descripcion"  class="form-label">Descripci&oacute;n</label>
                     <input type="text" class="form-control" name="descripcion" id="descripcion" required value="${articulo.descripcion}"> <br>
                     <label for="fecha"  class="form-label">Fecha</label>
-                    <input type="date" class="form-control" name="fecha" id="fecha" required value="${articulo.fecha}"> <br>
+                    <input type="date" class="form-control" name="fecha" id="fecha" required value="${fechaDB.substr(0,10)}"> <br>
                     <label for="stock"  class="form-label">Stock</label>
                     <input type="text" class="form-control" name="stock" id="stock" required value="${articulo.stock}"> <br>
                     <label for="venta"  class="form-label">Precio Venta</label>
                     <input type="text" class="form-control" name="venta" id="venta" required value="${articulo.venta}"> <br>
                     <label for="compra"  class="form-label">Precio Compra</label>
                     <input type="text" class="form-control" name="compra" id="compra" required value="${articulo.compra}"> <br>
-                    <button type="button" class="btn btn-outline-warning" 
-                        onclick="modificarArticulo('${articulo.codigo}')">Modificar
+                    <select class="form-select" name="user" id="user">
+                      <option value="${articulo.categoria.id}">${articulo.categoria.nombre}</option>`;
+                        for (const category of da) {
+                            if (articulo.categoria.id != category.id) {
+                                cadena += `
+                        <option value="${category.id}">${category.nombre}</option>`;
+                            }
+                        }
+                        cadena += `
+                    </select>
+                    </br>
+                    <button type="button" class="btn btn-outline-warning" onclick="modificarArticulo('${articulo.codigo}')">Modificar
                     </button>
                 </form>`;
+                        document.getElementById("contentModal").innerHTML = cadena;
+                        var myModal = new bootstrap.Modal(
+                            document.getElementById("modalUsuario")
+                        );
+                        myModal.toggle();
+                    });
             }
-            document.getElementById("contentModal").innerHTML = cadena;
-            var myModal = new bootstrap.Modal(document.getElementById('modalUsuario'))
-            myModal.toggle();
-        })
+        });
 }
 
 async function modificarArticulo(codigo) {
@@ -133,40 +147,41 @@ async function modificarArticulo(codigo) {
     var myForm = document.getElementById("myFormA");
     var formData = new FormData(myForm);
     var jsonData = {};
-    for (var [k, v] of formData) { //convertimos los datos a json
+    for (var [k, v] of formData) {
+        //convertimos los datos a json
         jsonData[k] = v;
     }
     const request = await fetch(urlApi + "/articulo/" + codigo, {
-        method: 'PUT',
+        method: "PUT",
         headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
-            'Authorization': localStorage.token
+            Accept: "application/json",
+            "Content-Type": "application/json",
+            Authorization: localStorage.token,
         },
-        body: JSON.stringify(jsonData)
+        body: JSON.stringify(jsonData),
     });
     listarArticulos();
-    alertas("Se ha modificado el articulo exitosamente!", 1)
-    document.getElementById("contentModal").innerHTML = '';
-    var myModalEl = document.getElementById('modalUsuario')
-    var modal = bootstrap.Modal.getInstance(myModalEl) // Returns a Bootstrap modal instance
+    alertas("Se ha modificado el articulo exitosamente!", 1);
+    document.getElementById("contentModal").innerHTML = "";
+    var myModalEl = document.getElementById("modalUsuario");
+    var modal = bootstrap.Modal.getInstance(myModalEl); // Returns a Bootstrap modal instance
     modal.hide();
 }
 
 function verArticulo(codigo) {
     validaToken();
     var settings = {
-        method: 'GET',
+        method: "GET",
         headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
-            'Authorization': localStorage.token
+            Accept: "application/json",
+            "Content-Type": "application/json",
+            Authorization: localStorage.token,
         },
-    }
+    };
     fetch(urlApi + "/articulo/" + codigo, settings)
-        .then(response => response.json())
+        .then((response) => response.json())
         .then(function(articulo) {
-            var cadena = '';
+            var cadena = "";
             if (articulo) {
                 cadena = `
                 <div class="p-3 mb-2 bg-light text-dark">
@@ -177,14 +192,14 @@ function verArticulo(codigo) {
                     <li class="list-group-item">Articulo: ${articulo.nombre}</li>
                     <li class="list-group-item">Descripcion: ${articulo.descripcion}</li>
                 </ul>`;
-
             }
             document.getElementById("contentModal").innerHTML = cadena;
-            var myModal = new bootstrap.Modal(document.getElementById('modalUsuario'))
+            var myModal = new bootstrap.Modal(
+                document.getElementById("modalUsuario")
+            );
             myModal.toggle();
-        })
+        });
 }
-
 
 function registerFormA(auth = false) {
     var settings = {
@@ -231,38 +246,39 @@ function registerFormA(auth = false) {
                 </select>
             <button type = "button" class = "btn btn-outline-info" onclick = "registrarArticulo('${auth}')" > Registrar </button> 
             </form>`;
-            document.getElementById("contentModal").innerHTML = cadena;
-            var myModal = new bootstrap.Modal(document.getElementById('modalUsuario'))
-            myModal.toggle();
         })
+    document.getElementById("contentModal").innerHTML = cadena;
+    var myModal = new bootstrap.Modal(document.getElementById("modalUsuario"));
+    myModal.toggle();
 }
 
 async function registrarArticulo(auth = false) {
     var myForm = document.getElementById("myFormRegA");
     var formData = new FormData(myForm);
     var jsonData = {};
-    for (var [k, v] of formData) { //convertimos los datos a json
+    for (var [k, v] of formData) {
+        //convertimos los datos a json
         jsonData[k] = v;
     }
-    console.log("data Article ", jsonData);
+
     const request = await fetch(urlApi + "/articulo", {
-            method: 'POST',
+            method: "POST",
             headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
+                Accept: "application/json",
+                "Content-Type": "application/json",
             },
-            body: JSON.stringify(jsonData)
+            body: JSON.stringify(jsonData),
         })
-        .then(response => response.json())
+        .then((response) => response.json())
         .then(function(respuesta) {
-            console.log("respuesta peticion", respuesta)
+            console.log("respuesta peticion", respuesta);
         });
     if (auth) {
         listarArticulos();
     }
-    alertas("Se ha registrado el articulo exitosamente!", 1)
-    document.getElementById("contentModal").innerHTML = '';
-    var myModalEl = document.getElementById('modalUsuario')
-    var modal = bootstrap.Modal.getInstance(myModalEl) // Returns a Bootstrap modal instance
+    alertas("Se ha registrado el articulo exitosamente!", 1);
+    document.getElementById("contentModal").innerHTML = "";
+    var myModalEl = document.getElementById("modalUsuario");
+    var modal = bootstrap.Modal.getInstance(myModalEl); // Returns a Bootstrap modal instance
     modal.hide();
 }

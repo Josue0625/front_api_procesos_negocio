@@ -26,6 +26,7 @@ async function login() {
 
 function listarUsuarios() {
     validaToken();
+    var cont = 0;
     var settings = {
         method: 'GET',
         headers: {
@@ -57,10 +58,10 @@ function listarUsuarios() {
                     <tbody id="listar">`;
             for (const usuario of data) {
                 console.log(usuario.email)
+                cont ++;
                 usuarios += `
-                
                         <tr>
-                            <th scope="row">${usuario.id}</th>
+                            <th scope="row">${cont}</th>
                             <td>${usuario.name}</td>
                             <td>${usuario.lastname}</td>
                             <td>${usuario.email}</td>
