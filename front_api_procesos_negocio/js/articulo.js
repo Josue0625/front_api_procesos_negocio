@@ -12,7 +12,7 @@ function listarArticulos() {
         },
     };
     fetch(urlApi + "/articulos", settings)
-        .then((response) => response.json())
+        .then(response => console.log(response.json()))
         .then(function(data) {
             var articulos = `
             <div class="p-3 mb-2 bg-light text-dark">
@@ -111,7 +111,7 @@ function verModificarArticulo(codigo) {
                     <input type="text" class="form-control" name="nombre" id="nombre" required value="${articulo.nombre}"> <br>
                     <label for="descripcion"  class="form-label">Descripci&oacute;n</label>
                     <input type="text" class="form-control" name="descripcion" id="descripcion" required value="${articulo.descripcion}"> <br>
-                    <label for="fecha"  class="form-label">Fecha</label>
+                    <label for="fecha"  class="form-label">Fecha de publicaci&0acute;n</label>
                     <input type="date" class="form-control" name="fecha" id="fecha" required value="${fechaDB.substr(0,10)}"> <br>
                     <label for="stock"  class="form-label">Stock</label>
                     <input type="text" class="form-control" name="stock" id="stock" required value="${articulo.stock}"> <br>
@@ -199,9 +199,15 @@ function verArticulo(codigo) {
                     <h1 class="display-5"><i class="fa-solid fa-user-pen"></i> Visualizar articulo</h1>
                 </div>
                 <ul class="list-group">
-                    <li class="list-group-item">codigo: ${articulo.codigo}</li>
-                    <li class="list-group-item">Articulo: ${articulo.nombre}</li>
+                    <li class="list-group-item">co&oacute;digo: ${articulo.codigo}</li>
+                    <li class="list-group-item">Art&iacute;culo: ${articulo.nombre}</li>
                     <li class="list-group-item">Descripcion: ${articulo.descripcion}</li>
+                    <li class="list-group-item">Creador del art&iacute;culo: ${articulo.user.name}</li>
+                    <li class="list-group-item">Fecha de publicaci&oacute;n: ${articulo.fecha.substr(0,10)}</li>
+                    <li class="list-group-item">Valor de compra: $${articulo.compra}</li>
+                    <li class="list-group-item">Valor de venta: $${articulo.venta}</li>
+                    <li class="list-group-item">Stock: ${articulo.stock}</li>
+                    <li class="list-group-item">Categor&iacute;a: ${articulo.categoria.nombre}</li>
                 </ul>`;
             }
             document.getElementById("contentModal").innerHTML = cadena;

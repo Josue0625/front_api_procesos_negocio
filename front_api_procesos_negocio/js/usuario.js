@@ -41,8 +41,8 @@ function listarUsuarios() {
 
             var usuarios = `
             <div class="p-3 mb-2 bg-light text-dark">
-                    <h1 class="display-5"><i class="fa-solid fa-list"></i> Listado de usuarios</h1>
-                </div>
+                <h1 class="display-5"><i class="fa-solid fa-list"></i> Listado de usuarios</h1>
+            </div>
                   
                 <a href="#" onclick="registerForm('true')" class="btn btn-outline-success"><i class="fa-solid fa-user-plus"></i></a>
                 <table class="table">
@@ -109,6 +109,7 @@ function eliminaUsuario(id) {
 
 function verModificarUsuario(id) {
     validaToken();
+    var cont=0;
     var settings = {
         method: 'GET',
         headers: {
@@ -122,13 +123,14 @@ function verModificarUsuario(id) {
         .then(function(usuario) {
             var cadena = '';
             if (usuario) {
+                cont ++;
                 cadena = `
                 <div class="p-3 mb-2 bg-light text-dark">
                     <h1 class="display-5"><i class="fa-solid fa-user-pen"></i> Modificar Usuario</h1>
                 </div>
               
                 <form action="" method="post" id="myForm">
-                    <input type="hidden" name="id" id="id" value="${usuario.id}">
+                    <input type="hidden" name="id" id="id" value="${cont}">
                     <label for="name" class="form-label">First Name</label>
                     <input type="text" class="form-control" name="name" id="name" required value="${usuario.name}"> <br>
                     <label for="lastname"  class="form-label">Last Name</label>
@@ -137,6 +139,12 @@ function verModificarUsuario(id) {
                     <input type="text" class="form-control" name="document" id="document" required value="${usuario.document}"> <br>
                     <label for="email" class="form-label">email</label>
                     <input type="email" class="form-control" name="email" id="email" required value="${usuario.email}"> <br>
+                    <label for="date"  class="form-label">Data of birth</label>
+                    <input type="date" class="form-control" name="date" id="date" required value="${usuario.date.substr(0,10)}"> <br>
+                    <label for="phone" class="form-label">Direction</label>
+                    <input type="text" class="form-control" name="direction" id="direction" required value="${usuario.direction}"> <br>
+                    <label for="phone" class="form-label">Phone</label>
+                    <input type="number" class="form-control" name="phone" id="phone" required value="${usuario.phone}"> <br>
                     <label for="password" class="form-label">Password</label>
                     <input type="password" class="form-control" id="password" name="password" required> <br>
                     <button type="button" class="btn btn-outline-warning" 
@@ -189,16 +197,20 @@ function verUsuario(id) {
         .then(response => response.json())
         .then(function(usuario) {
             var cadena = '';
+            console.log(usuario)
             if (usuario) {
                 cadena = `
                 <div class="p-3 mb-2 bg-light text-dark">
                     <h1 class="display-5"><i class="fa-solid fa-user-pen"></i> Visualizar Usuario</h1>
                 </div>
                 <ul class="list-group">
-                    <li class="list-group-item">name: ${usuario.name}</li>
+                    <li class="list-group-item">Nombre: ${usuario.name}</li>
                     <li class="list-group-item">Apellido: ${usuario.lastname}</li>
-                    <li class="list-group-item">email: ${usuario.email}</li>
-                    <li class="list-group-item">document: ${usuario.document}</li>
+                    <li class="list-group-item">Email: ${usuario.email}</li>
+                    <li class="list-group-item">Documento: ${usuario.document}</li>
+                    <li class="list-group-item">Fecha de nacimiento: ${usuario.date.substr(0,10)}</li>
+                    <li class="list-group-item">Direcci&oacute;n: ${usuario.direction}</li>
+                    <li class="list-group-item">Telefono: ${usuario.phone}</li>
                 </ul>`;
 
             }
@@ -233,13 +245,19 @@ function registerForm(auth = false) {
             <form action="" method="post" id="myFormReg">
                 <input type="hidden" name="id" id="id">
                 <label for="name" class="form-label">First Name</label>
-                <input type="text" class="form-control" name="name" id="name" required> <br>
+                <input type="text" class="form-control" name="name" id="Name" required> <br>
                 <label for="lastname"  class="form-label">Last Name</label>
                 <input type="text" class="form-control" name="lastname" id="lastname" required> <br>
                 <label for="document"  class="form-label">document</label>
                 <input type="text" class="form-control" name="document" id="document" required> <br>
                 <label for="email" class="form-label">email</label>
-                <input type="email" class="form-control" name="email" id="email" required> <br>
+                <input type="email" class="form-control" name="email" id="Email" required> <br>
+                <label for="date" class="form-label" name="date">Date of birth</label>
+                <input type="date" class="form-control" name="date" id="date" required> <br>
+                <label for="phone" class="form-label">Direction</label>
+                <input type="text" class="form-control" name="direction" id="direction" required> <br>
+                <label for="phone" class="form-label">Phone</label>
+                <input type="number" class="form-control" name="phone" id="phone" required> <br>
                 <label for="password" class="form-label">Password</label>
                 <input type="password" class="form-control" id="password" name="password" required> <br>
                 <button type="button" class="btn btn-outline-info" onclick="registrarUsuario('${auth}')">Registrar</button>
@@ -256,7 +274,7 @@ async function registrarUsuario(auth = false) {
     for (var [k, v] of formData) { //convertimos los datos a json
         jsonData[k] = v;
     }
-    console.log("data user ", jsonData);
+    console.log(jsonData)
     const request = await fetch(urlApi + "/user", {
             method: 'POST',
             headers: {
