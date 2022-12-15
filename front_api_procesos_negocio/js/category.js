@@ -18,7 +18,7 @@ function listarCategorias() {
                     <h1 class="display-5"><i class="fa-solid fa-list"></i> Listado de categorias</h1>
                 </div>
                   
-                <a href="#" onclick="registerForm('true')" class="btn btn-outline-success"><i class="fa-solid fa-user-plus"></i></a>
+                <a href="#" onclick="registerFormCa('true')" class="btn btn-outline-success"><i class="fa-solid fa-user-plus"></i></a>
                 <table class="table">
                     <thead>
                         <tr>
@@ -83,8 +83,7 @@ function verModificarCategoria(id) {
                     <h1 class="display-5"><i class="fa-solid fa-user-pen"></i> Modificar Categoria</h1>
                 </div>
                 <form action="" method="post" id="myForm">
-                    <input type="hidden" value="${cont}">
-                    <label for="name" class="form-label">First Nombre</label>
+                    <label for="name" class="form-label">Nombre</label>
                     <input type="text" class="form-control" name="nombre" id="nombre" required value="${categoria.nombre}"> <br>
                     <label for="lastname"  class="form-label">Descripcion</label>
                     <input type="text" class="form-control" name="descripcion" id="descripcion" required value="${categoria.descripcion}"> <br>
@@ -167,8 +166,54 @@ function eliminaCategoria(id) {
     }
     fetch(urlApi + "/deleteCategoria/" + id, settings)
         .then((data) => {
-            console.log(data); // JSON data parsed by `data.json()` call
             listarCategorias();
             alertas("Se ha eliminado la categoria exitosamente!", 2)
         })
+}
+
+function registerFormCa(auth = false) {
+    cadena = `
+            <div class="p-3 mb-2 bg-light text-dark">
+                <h1 class="display-5"><i class="fa-solid fa-user-pen"></i> Registrar Categoria</h1>
+            </div>
+              
+            <form action="" method="post" id="myFormRegCa">
+                <label for="name" class="form-label">Nombre</label>
+                <input type="text" class="form-control" name="nombre" id="nombre" required> <br>
+                <label for="lastname"  class="form-label">Descripcion</label>
+                <input type="text" class="form-control" name="descripcion" id="descripcion" required> <br>
+                <button type="button" class="btn btn-outline-info" onclick="registrarCategoria('${auth}')">Registrar</button>
+            </form>`;
+    document.getElementById("contentModal").innerHTML = cadena;
+    var myModal = new bootstrap.Modal(document.getElementById('modalUsuario'))
+    myModal.toggle();
+}
+
+async function registrarCategoria(auth = false) {
+    var myForm = document.getElementById("myFormRegCa");
+    var formData = new FormData(myForm);
+    var jsonData = {};
+    for (var [k, v] of formData) { //convertimos los datos a json
+        jsonData[k] = v;
+    }
+    const request = await fetch(urlApi + "/categoria", {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(jsonData)
+        })
+        .then(response => response.json())
+        .then(function(respuesta) {
+            console.log("respuesta peticion", respuesta)
+        });
+    if (auth) {
+        listarCategorias();
+    }
+    alertas("Se ha registrado la categoria exitosamente!", 1)
+    document.getElementById("contentModal").innerHTML = '';
+    var myModalEl = document.getElementById('modalUsuario')
+    var modal = bootstrap.Modal.getInstance(myModalEl) // Returns a Bootstrap modal instance
+    modal.hide();
 }
