@@ -1,5 +1,5 @@
 //funciones js para el modulo de usuarios
-const urlApi = "http://localhost:0606"; //colocar la url con el puerto
+const urlApi = "http://localhost:2929"; //colocar la url con el puerto
 
 async function login() {
     var myForm = document.getElementById("myForm");
