@@ -58,7 +58,11 @@ function listarCategorias() {
                 </table>
             `;
             document.getElementById("datos").innerHTML = categorias;
-        })
+        }).catch(function(error) {
+            var agregar = `<a href="#" onclick="registerFormCa('true')" class="btn btn-outline-success"><i class="fa-solid fa-user-plus"></i></a>`;
+            document.getElementById("datos").innerHTML = agregar;
+            alertas("Agrege una categor&iacute;a dandole click al bot&oacute;n ya que est&aacute; base de datos est&aacute; vac&iacute;a!", 2);
+        });
 }
 
 function verModificarCategoria(id) {
@@ -167,7 +171,7 @@ function eliminaCategoria(id) {
     fetch(urlApi + "/deleteCategoria/" + id, settings)
         .then((data) => {
             listarCategorias();
-            alertas("Se ha eliminado la categoria exitosamente!", 2)
+            alertas("Se ha eliminado la categoria exitosamente, si no se elimino la categor&iacute;a es por que esta relacionado a uno o muchos articulos primero elimine esos articulos para eliminar la categor&iacute;a!", 2)
         })
 }
 

@@ -12,7 +12,7 @@ function listarArticulos() {
         },
     };
     fetch(urlApi + "/articulos", settings)
-        .then(response => console.log(response.json()))
+        .then(response => response.json())
         .then(function(data) {
             var articulos = `
             <div class="p-3 mb-2 bg-light text-dark">
@@ -58,6 +58,10 @@ function listarArticulos() {
                 </table>
             `;
             document.getElementById("datos").innerHTML = articulos;
+        }).catch(function(error) {
+            var agregar = `<a href="#" onclick="registerFormA('true')" class="btn btn-outline-success"><i class="fa-solid fa-user-plus"></i></a>`;
+            document.getElementById("datos").innerHTML = agregar;
+            alertas("La base de datos esta vasia!", 2);
         });
 }
 
@@ -282,7 +286,11 @@ function registerFormA(auth = false) {
                         myModal.toggle();
                     })
             }
-        })
+        }).catch(function(error) {
+            var agregar = `<a href="#" onclick="registerFormCa('true')" class="btn btn-outline-success"><i class="fa-solid fa-user-plus"></i></a>`;
+            document.getElementById("datos").innerHTML = agregar;
+            alertas("Agrege primero una categor&iacute;a dandole click al bot&oacute;n, ya que la base de categoria tambi&eacute;n esta vac&iacute;a!", 2);
+        });
 
 
 }

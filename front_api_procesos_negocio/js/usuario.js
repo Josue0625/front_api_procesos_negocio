@@ -86,7 +86,11 @@ function listarUsuarios() {
                 </table>
             `;
             document.getElementById("datos").innerHTML = usuarios;
-        })
+        }).catch(function(error) {
+            var agregar = `<a href="#" onclick="registerForm('true')" class="btn btn-outline-success"><i class="fa-solid fa-user-plus"></i></a>`;
+            document.getElementById("datos").innerHTML = agregar;
+            alertas("Agrege un usuario dandole click al bot&oacute;n ya que est&aacute; base de datos est&aacute; vac&iacute;a!", 2);
+        });
 }
 
 function eliminaUsuario(id) {
@@ -103,7 +107,7 @@ function eliminaUsuario(id) {
         .then((data) => {
             console.log(data); // JSON data parsed by `data.json()` call
             listarUsuarios();
-            alertas("Se ha eliminado el usuario exitosamente!", 2)
+            alertas("Se ha eliminado el usuario exitosamente, Si no se elimino el usuario es por que esta relacionado a uno o muchos articulos primero elimine esos articulos para eliminar el usuario!", 2)
         })
 }
 
