@@ -132,7 +132,7 @@ function verModificarArticulo(codigo) {
                     </select>
                     </br>
                     <label for="user" class="form-label">Craedor del Art&iacute;culo</label>
-                    <input type="text" class="form-control" name="codigo" id="codigo" disabled value="${articulo.user.name} ${articulo.user.lastname} "> <br>
+                    <input type="text" class="form-control" name="categoria" id="categoria" disabled value="${articulo.user.name} ${articulo.user.lastname} "> <br>
                     </br>
                     <button type="button" class="btn btn-outline-warning" onclick="modificarArticulo('${articulo.codigo}')">Modificar
                     </button>
@@ -152,9 +152,15 @@ async function modificarArticulo(codigo) {
     var myForm = document.getElementById("myFormA");
     var formData = new FormData(myForm);
     var jsonData = {};
+    var jsonCategoria = {}
     for (var [k, v] of formData) {
         //convertimos los datos a json
-        jsonData[k] = v;
+        if(k=="categoria"){
+          jsonCategoria["id"]=v;
+          jsonData[k]=jsonCategoria
+        }else{
+          jsonData[k] = v;
+        }
     }
     const request = await fetch(urlApi + "/articulo/" + codigo, {
         method: "PUT",
