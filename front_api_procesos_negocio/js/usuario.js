@@ -210,13 +210,14 @@ function verUsuario(id) {
 
 function alertas(mensaje, tipo) {
     var color = "warning";
+    var check="";
     if (tipo == 1) { //success verde
         color = "success"
     } else { //danger rojo
         color = "danger"
     }
     var alerta = `<div class="alert alert-${color} alert-dismissible fade show" role="alert">
-                    <strong><i class="fa-solid fa-triangle-exclamation"></i></strong>
+                    <strong></strong>
                         ${mensaje}
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                  </div>`;
