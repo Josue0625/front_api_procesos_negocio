@@ -218,7 +218,11 @@ function registerFormA(auth = false) {
     fetch(urlApi + "/categorias", settings)
         .then(response => response.json())
         .then(function(data) {
-            cadena = `
+            if (data) {
+                fetch(urlApi + "/listusers", settings)
+                    .then(response => response.json())
+                    .then(function(datauser) {
+                        cadena = `
             <div class="p-3 mb-2 bg-light text-dark">
                 <h1 class="display-5"><i class="fa-solid fa-user-pen"></i> Registrar articulo</h1>
             </div>
@@ -234,38 +238,63 @@ function registerFormA(auth = false) {
                 <label for="fecha"  class="form-label">Fecha</label>
                 <input type="date" class="form-control" name="fecha" id="fecha" required> <br>
                 <label for="stock"  class="form-label">Stock</label>
-                <input type="text" class="form-control" name="stock" id="stock" required> <br>
+                <input type="number" class="form-control" name="stock" id="stock" required> <br>
                 <label for="venta"  class="form-label">Precio Venta</label>
-                <input type="text" class="form-control" name="venta" id="venta" required> <br>
+                <input type="number" class="form-control" name="venta" id="venta" required> <br>
                 <label for="compra"  class="form-label">Precio Compra</label>
-                <input type="text" class="form-control" name="compra" id="compra" required> <br>
+                <input type="number" class="form-control" name="compra" id="compra" required> <br>
                 <label for="categoria">Categoria</label>
                 <select class="form-select" id="categoria" name="categoria" aria-label="Default select example">
                             <option value="0"></option>
                             `;
-            for (const categoria of data) {
-                console.log(categoria.id)
-                cadena += `<option value="${categoria.id}">${categoria.nombre}</option>`;
-            }
-            cadena += `
-                </select>
+                        for (const categoria of data) {
+                            console.log(categoria.id)
+                            cadena += `<option value="${(categoria.id)}">${categoria.nombre}</option>`;
+                        }
+                        cadena += `
+                </select><br>
+                <label for="user">Usuario</label>
+                <select class="form-select" id="user" name="user" aria-label="Default select example">
+                            <option value="0"></option>
+                            `;
+                        for (const user of datauser) {
+                            console.log(user.id)
+                            cadena += `<option value="${parseInt(user.id)}">${user.name}</option>`;
+                        }
+                        cadena += `
+                </select><br>
             <button type = "button" class = "btn btn-outline-info" onclick = "registrarArticulo('${auth}')" > Registrar </button> 
             </form>`;
+                        document.getElementById("contentModal").innerHTML = cadena;
+                        var myModal = new bootstrap.Modal(document.getElementById("modalUsuario"));
+                        myModal.toggle();
+                    })
+            }
         })
-    document.getElementById("contentModal").innerHTML = cadena;
-    var myModal = new bootstrap.Modal(document.getElementById("modalUsuario"));
-    myModal.toggle();
+
+
 }
 
 async function registrarArticulo(auth = false) {
     var myForm = document.getElementById("myFormRegA");
     var formData = new FormData(myForm);
     var jsonData = {};
+    var jsonCategoria = {};
+    var jsonUser = {};
     for (var [k, v] of formData) {
-        //convertimos los datos a json
-        jsonData[k] = v;
-    }
+        if (k == "categoria") {
+            jsonCategoria["id"] = v;
+            jsonData[k] = jsonCategoria
 
+        } else if (k == "user") {
+            jsonUser["id"] = v;
+            jsonData[k] = jsonUser
+        } else {
+            jsonData[k] = v;
+        }
+    }
+    //convertimos los datos a json
+    console.log("data user ", jsonData);
     const request = await fetch(urlApi + "/articulo", {
             method: "POST",
             headers: {
